@@ -1,0 +1,452 @@
+*,
+*::after,
+*::before {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body,
+html {
+    background-color: black;
+    color: white;
+    font-family: 'Orbitron', sans-serif;
+    overflow-x: hidden;
+
+}
+
+/* prima sezione  */
+nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 2em 3em;
+    position: relative;
+}
+
+.logo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+    font-size: 22px;
+    z-index: 1;
+    color: white;
+    text-transform: uppercase;
+    z-index: 1000;
+
+
+
+
+}
+
+.logo-img {
+    height: 100px;
+    z-index: 999;
+
+}
+
+.logo h1 {
+    text-align: center;
+    color: white;
+
+
+
+
+}
+
+@keyframes colore {
+    0% {
+        color: white;
+    }
+
+    25% {
+        color: blue;
+    }
+
+    50% {
+        color: purple;
+    }
+
+    75% {
+        color: blueviolet;
+    }
+
+    100% {
+        color: white;
+    }
+}
+
+.hamburger {
+    display: none;
+    flex-direction: column;
+    height: 24px;
+    justify-content: space-between;
+    z-index: 1000;
+    width: 34px;
+    cursor: pointer;
+    position: fixed;
+
+
+}
+
+.hamburger span {
+    display: block;
+    width: 100%;
+    height: 3px;
+    background-color: white;
+    transition: all 0.3s ease;
+}
+
+ul {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 25px;
+    width: 50%;
+    cursor: pointer;
+
+
+
+}
+
+
+
+li {
+
+    align-items: center;
+    justify-content: center;
+    margin-right: 30px;
+    list-style: none;
+    color: black;
+    font-size: 18px;
+    transition: transform 0.3s ease, color 0.3s ease;
+    position: relative;
+    padding: 1em 2em;
+
+}
+
+li:hover {
+    transform: translateY(-10px) scale(1.2);
+    color: blue;
+
+}
+
+
+.button a{
+    text-decoration: none;
+    color: black;
+}
+@media screen and (max-width: 543px) {
+    .hamburger {
+        display: flex;
+        right: 25px;
+
+    }
+    .cv a{
+        text-decoration: none;
+        color: black;
+
+    }
+    .autore{
+        font-size: 24px;
+    }
+
+    .logo-img {
+
+        height: 50px;
+        margin-left: 2px;
+
+    }
+
+    ul {
+        position: fixed;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100vh;
+        background-color: black;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        transition: all 0.5s ease;
+        padding: 2em;
+        z-index: 999;
+    }
+
+    ul.active {
+        left: 0;
+
+
+    }
+
+    .cv.active {
+        display: flex;
+    }
+
+
+    .hamburger.active span:nth-child(1) {
+        transform: translateY(10px) rotate(45deg);
+        background-color: white;
+    }
+
+    .hamburger.active span:nth-child(2) {
+        opacity: 0;
+    }
+
+    .hamburger.active span:nth-child(3) {
+        transform: translateY(-10px) rotate(-45deg);
+        background-color: white;
+    }
+
+    .home {
+        width: 60vw;
+        height: 70vh;
+        position: relative;
+
+    }
+
+    .utente {
+        height: 100%;
+        margin-top: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-direction: column;
+        padding: 1em 2em;
+        width: 20vw;
+    }
+
+    .descrizione {
+        flex-wrap: wrap;
+    }
+
+    .apps a {
+        display: none;
+    }
+
+    .citta {
+        height: 200px;
+        width: 75%;
+        margin-top: 30px;
+
+    }
+
+    .button {
+        display: none;
+
+    }
+    .presentazione{
+        margin-top: 30px;
+    }
+
+
+
+
+
+
+}
+
+.home {
+    height: 70vh;
+    width: 70vw;
+    margin-top: 55px;
+
+
+
+}
+
+.utente {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1em 2em;
+    width: 100vw;
+}
+
+.citta {
+    height: 400px;
+    mix-blend-mode: lighten;
+}
+
+.presentazione {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    width: 80vw;
+
+}
+
+.nome {
+    text-align: center;
+    font-size: 55px;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 12px;
+
+}
+
+.descrizione {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 15px;
+    flex-wrap: wrap;
+    margin-top: 30px;
+}
+
+
+
+
+.apps {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    height: 250px;
+    cursor: pointer;
+
+}
+
+.apps a {
+    text-decoration: none;
+    color: white;
+    height: 50px;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    transition: all 0.2s ease;
+
+}
+
+.apps a:hover {
+    transform: translateY(-10px) scale(1.2);
+    color: gray;
+
+}
+
+.testo {
+    align-items: center;
+    justify-content: center;
+}
+
+.testo>h1 {
+    text-align: center;
+}
+
+.citta {
+    mix-blend-mode: lighten;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+
+    }
+
+    50% {
+        transform: translateY(-20px);
+    }
+}
+
+.float{
+    mix-blend-mode: lighten;
+    animation : float 3s ease-in-out infinite;
+}
+@keyframes float{
+    0%,100%{
+        transform: translateY(0);
+    }
+    50%{
+        transform: translateY(-20px);
+    }
+}
+.button {
+    padding: 1em 2em;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    color: black;
+    transition: all 1000ms;
+    font-size: 15px;
+    position: relative;
+    overflow: hidden;
+    outline: 2px solid black;
+    margin-top: 50px;
+}
+
+button:hover {
+    color: white;
+    transform: scale(1.1);
+    outline: 2px solid gray;
+    box-shadow: 4px 5px 17px -4px white;
+}
+
+button::before {
+    content: "";
+    position: absolute;
+    left: -50px;
+    top: 0;
+    width: 0;
+    height: 100%;
+    background-color: gray;
+    transform: skewX(45deg);
+    z-index: -1;
+    transition: width 1000ms;
+}
+
+button:hover::before {
+    width: 250%;
+}
+
+
+.cv {
+    display: none;
+    padding: 1em 2em;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    color: black;
+    transition: all 1000ms;
+    font-size: 15px;
+    position: relative;
+    overflow: hidden;
+    outline: 2px solid black;
+    margin-top: 50px;
+}
+
+.cv:hover {
+    color: white;
+    transform: scale(1.1);
+    outline: 2px solid gray;
+    box-shadow: 4px 5px 17px -4px white;
+}
+
+.cv::before {
+    content: "";
+    position: absolute;
+    left: -50px;
+    top: 0;
+    width: 0;
+    height: 100%;
+    background-color: gray;
+    transform: skewX(45deg);
+    z-index: -1;
+    transition: width 1000ms;
+}
+
+.cv:hover::before {
+    width: 250%;
+}
+
+
+
