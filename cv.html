@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>CV | Salvatore Naro</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: "Orbitron", sans-serif;
+        }
+        #container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        #info {
+            position: absolute;
+            top: 20px;
+            width: 100%;
+            text-align: center;
+            color: white;
+            font-size: 24px;
+            text-shadow: 1px 1px 2px black;
+            pointer-events: none;
+        }
+        #controls {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            color: white;
+            background-color: rgba(0,0,0,0.5);
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    <div id="info">
+        <h1>Il CV non è stato ancora creato</h1>
+    </div>
+    <div id="controls">
+        <p>Trascina con il mouse per ruotare</p>
+        <p>Scroll per zoomare</p>
+        <p>Clicca per cambiare colore</p>
+        <a href="index.html">Clicca qui per ritornale alla home</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
+    <script>
+        
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x333333);
+        document.getElementById('container').appendChild(renderer.domElement);
+
+        
+        const geometry = new THREE.BoxGeometry();
+        const material = new THREE.MeshPhongMaterial({ 
+            color: 0x00ff00,
+            specular: 0x111111,
+            shininess: 30
+        });
+        const cube = new THREE.Mesh(geometry, material);
+        scene.add(cube);
+
+        
+        const light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(1, 1, 1);
+        scene.add(light);
+
+        const ambientLight = new THREE.AmbientLight(0x404040);
+        scene.add(ambientLight);
+
+       
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+
+        camera.position.z = 5;
+
+       
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+       
+        renderer.domElement.addEventListener('click', () => {
+            const randomColor = Math.random() * 0xffffff;
+            cube.material.color.setHex(randomColor);
+        });
+
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+           
+            if (!controls.autoRotate && !controls.isRotating) {
+                cube.rotation.x += 0.005;
+                cube.rotation.y += 0.01;
+            }
+            
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        animate();
+    </script>
+</body>
+</html>

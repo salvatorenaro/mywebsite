@@ -1,0 +1,1 @@
+alert('Benvenuti per esplorare il Sito dovete usare il menu di navigazione. ')
