@@ -1,11 +1,10 @@
 function loco() {
   gsap.registerPlugin(ScrollTrigger);
 
-  // Detect mobile device
   const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
 
-  // Use Locomotive Scroll only on desktop
   if (!isMobile) {
+    // Desktop: Use Locomotive Scroll
     const locoScroll = new LocomotiveScroll({
       el: document.querySelector("#main"),
       smooth: true
@@ -29,26 +28,17 @@ function loco() {
     // Mobile: Disable Locomotive, use native scroll
     document.querySelector("#main").style.height = "auto";
     document.querySelector("#main").style.overflow = "visible";
-    ScrollTrigger.scrollerProxy(window, {
-      scrollTop(value) {
-        return arguments.length ? window.scrollTo(0, value) : window.scrollY;
-      },
-      getBoundingClientRect() {
-        return { top: 0, left: 0, width: window.innerWidth, height: window.innerHeight };
-      },
-      pinType: "fixed"
-    });
     ScrollTrigger.refresh();
   }
 }
 
-// Detect mobile once at the start
+
 const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
 const scrollerElement = isMobile ? window : "#main";
 
 loco();
 
-// Text animation for page2
+
 let breaker_1 = "";
 document.querySelector('#page2>.page2-content>h1').textContent.split("").forEach(function (breakword_1) {
   breaker_1 += `<span>${breakword_1}</span>`;
@@ -65,13 +55,13 @@ gsap.to('#page2>.page2-content>h1>span', {
   },
   stagger: .2,
   color: `#ffff`
-});
+})
 
-// Canvas function for page3
 function canvas() {
   const canvas = document.querySelector("#page3>canvas");
   const context = canvas.getContext("2d");
   
+  // Improved canvas sizing for mobile
   function resizeCanvas() {
     const pixelRatio = window.devicePixelRatio || 1;
     const displayWidth = window.innerWidth;
@@ -116,6 +106,7 @@ function canvas() {
     foto16.jpg  
     foto17.jpg 
     foto18.jpg 
+    foto18.jpg  
     foto19.jpg  
     foto20.jpg  
     foto21.jpg  
@@ -137,7 +128,7 @@ function canvas() {
     foto38.jpg
     foto39.jpg
     foto40.jpg
-    `;
+  `;
     return data.split("\n")[index];
   }
 
@@ -145,13 +136,14 @@ function canvas() {
   const images = [];
   const imageSeq = { frame: 1 };
 
+  // Preload images with better mobile handling
   let loadedImages = 0;
   for (let i = 0; i < frameCount; i++) {
     const img = new Image();
     img.crossOrigin = "anonymous";
     img.onload = () => {
       loadedImages++;
-      if (loadedImages === 1) render();
+      if (loadedImages === 1) render(); // Render first frame immediately
     };
     img.src = files(i);
     images.push(img);
@@ -210,7 +202,6 @@ function canvas() {
 
 canvas();
 
-// Text animation for page4
 let breaker_2 = "";
 document.querySelector('#page4>.page4-content>h1').textContent.split("").forEach(function (breakword_2) {
   breaker_2 += `<span>${breakword_2}</span>`;
@@ -227,9 +218,8 @@ gsap.to('#page4>.page4-content>h1>span', {
   },
   stagger: .2,
   color: `#ffff`
-});
+})
 
-// Canvas function for page5
 function canvas1() {
   const canvas = document.querySelector("#page5>canvas");
   const context = canvas.getContext("2d");
@@ -365,7 +355,7 @@ function canvas1() {
 
 canvas1();
 
-// Text animation for page6
+
 let breaker_3 = "";
 document.querySelector('#page6>.page6-content>h1').textContent.split("").forEach(function (breakword_3) {
   breaker_3 += `<span>${breakword_3}</span>`;
@@ -382,9 +372,9 @@ gsap.to('#page6>.page6-content>h1>span', {
   },
   stagger: .2,
   color: `#ffff`
-});
+})
 
-// Add this for mobile debugging
+
 if (isMobile) {
   console.log("Mobile detected - using native scroll");
   // Force refresh after a short delay to ensure everything is loaded
