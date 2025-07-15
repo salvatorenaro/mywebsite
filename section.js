@@ -5,14 +5,7 @@ function loco() {
 
   const locoScroll = new LocomotiveScroll({
     el: document.querySelector("#main"),
-    smooth: true,
-    // Aggiunte per mobile
-    smartphone: {
-      smooth: true
-    },
-    tablet: {
-      smooth: true
-    }
+    smooth: true
   });
 
   locoScroll.on("scroll", ScrollTrigger.update);
@@ -23,28 +16,11 @@ function loco() {
     getBoundingClientRect() {
       return { top: 0, left: 0, width: window.innerWidth, height: window.innerHeight };
     },
-
     pinType: document.querySelector("#main").style.transform ? "transform" : "fixed"
   });
 
   ScrollTrigger.addEventListener("refresh", () => locoScroll.update());
   ScrollTrigger.refresh();
-
-  // Refresh su resize per mobile
-  window.addEventListener("resize", () => {
-    setTimeout(() => {
-      locoScroll.update();
-      ScrollTrigger.refresh();
-    }, 100);
-  });
-
-  // Refresh su orientamento mobile
-  window.addEventListener("orientationchange", () => {
-    setTimeout(() => {
-      locoScroll.update();
-      ScrollTrigger.refresh();
-    }, 500);
-  });
 }
 loco();
 
@@ -70,34 +46,21 @@ function canvas() {
   const canvas = document.querySelector("#page3>canvas");
   const context = canvas.getContext("2d");
 
-  // Funzione per impostare dimensioni responsive
-  function setCanvasSize() {
-    const pixelRatio = window.devicePixelRatio || 1;
-    canvas.width = window.innerWidth * pixelRatio;
-    canvas.height = window.innerHeight * pixelRatio;
-    canvas.style.width = window.innerWidth + 'px';
-    canvas.style.height = window.innerHeight + 'px';
-    context.scale(pixelRatio, pixelRatio);
-  }
+  // FISSA LE DIMENSIONI SENZA PIXEL RATIO
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 
-  setCanvasSize();
-
-  // Event listeners per resize migliorati
-  let resizeTimeout;
+  let isResizing = false;
   window.addEventListener("resize", function () {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => {
-      setCanvasSize();
-      render();
-    }, 100);
-  });
-
-  // Orientamento mobile
-  window.addEventListener("orientationchange", function () {
-    setTimeout(() => {
-      setCanvasSize();
-      render();
-    }, 500);
+    if (!isResizing) {
+      isResizing = true;
+      setTimeout(() => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        render();
+        isResizing = false;
+      }, 50);
+    }
   });
 
   function files(index) {
@@ -142,18 +105,22 @@ function canvas() {
     foto38.jpg
     foto39.jpg
     foto40.jpg
-  `;
+    `;
     return data.split("\n")[index];
   }
 
   const frameCount = 40;
   const images = [];
-  const imageSeq = {
-    frame: 1,
-  };
+  const imageSeq = { frame: 1 };
 
+  // PRECARICA TUTTE LE IMMAGINI
+  let loadedImages = 0;
   for (let i = 0; i < frameCount; i++) {
     const img = new Image();
+    img.onload = () => {
+      loadedImages++;
+      if (loadedImages === 1) render(); // Renderizza appena la prima è caricata
+    };
     img.src = files(i);
     images.push(img);
   }
@@ -172,24 +139,20 @@ function canvas() {
     onUpdate: render,
   });
 
-  images[1].onload = render;
-
   function render() {
-    scaleImage(images[imageSeq.frame], context);
+    const currentImage = images[imageSeq.frame];
+    if (!currentImage || !currentImage.complete) return;
+    
+    scaleImage(currentImage, context);
   }
 
   function scaleImage(img, ctx) {
-    if (!img || !img.width || !img.height) return;
-    
-    var canvas = ctx.canvas;
-    var displayWidth = window.innerWidth;
-    var displayHeight = window.innerHeight;
-    
-    var hRatio = displayWidth / img.width;
-    var vRatio = displayHeight / img.height;
-    var ratio = Math.max(hRatio, vRatio);
-    var centerShift_x = (displayWidth - img.width * ratio) / 2;
-    var centerShift_y = (displayHeight - img.height * ratio) / 2;
+    const canvas = ctx.canvas;
+    const hRatio = canvas.width / img.width;
+    const vRatio = canvas.height / img.height;
+    const ratio = Math.max(hRatio, vRatio);
+    const centerShift_x = (canvas.width - img.width * ratio) / 2;
+    const centerShift_y = (canvas.height - img.height * ratio) / 2;
     
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(
@@ -237,34 +200,21 @@ function canvas1() {
   const canvas = document.querySelector("#page5>canvas");
   const context = canvas.getContext("2d");
 
-  // Funzione per impostare dimensioni responsive
-  function setCanvasSize() {
-    const pixelRatio = window.devicePixelRatio || 1;
-    canvas.width = window.innerWidth * pixelRatio;
-    canvas.height = window.innerHeight * pixelRatio;
-    canvas.style.width = window.innerWidth + 'px';
-    canvas.style.height = window.innerHeight + 'px';
-    context.scale(pixelRatio, pixelRatio);
-  }
+  // FISSA LE DIMENSIONI SENZA PIXEL RATIO
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 
-  setCanvasSize();
-
-  // Event listeners per resize migliorati
-  let resizeTimeout;
+  let isResizing = false;
   window.addEventListener("resize", function () {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => {
-      setCanvasSize();
-      render();
-    }, 100);
-  });
-
-  // Orientamento mobile
-  window.addEventListener("orientationchange", function () {
-    setTimeout(() => {
-      setCanvasSize();
-      render();
-    }, 500);
+    if (!isResizing) {
+      isResizing = true;
+      setTimeout(() => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        render();
+        isResizing = false;
+      }, 50);
+    }
   });
 
   function files(index) {
@@ -307,12 +257,16 @@ function canvas1() {
 
   const frameCount = 31;
   const images = [];
-  const imageSeq = {
-    frame: 1,
-  };
+  const imageSeq = { frame: 1 };
 
+  // PRECARICA TUTTE LE IMMAGINI
+  let loadedImages = 0;
   for (let i = 0; i < frameCount; i++) {
     const img = new Image();
+    img.onload = () => {
+      loadedImages++;
+      if (loadedImages === 1) render(); // Renderizza appena la prima è caricata
+    };
     img.src = files(i);
     images.push(img);
   }
@@ -331,24 +285,20 @@ function canvas1() {
     onUpdate: render,
   });
 
-  images[1].onload = render;
-
   function render() {
-    scaleImage(images[imageSeq.frame], context);
+    const currentImage = images[imageSeq.frame];
+    if (!currentImage || !currentImage.complete) return;
+    
+    scaleImage(currentImage, context);
   }
 
   function scaleImage(img, ctx) {
-    if (!img || !img.width || !img.height) return;
-    
-    var canvas = ctx.canvas;
-    var displayWidth = window.innerWidth;
-    var displayHeight = window.innerHeight;
-    
-    var hRatio = displayWidth / img.width;
-    var vRatio = displayHeight / img.height;
-    var ratio = Math.max(hRatio, vRatio);
-    var centerShift_x = (displayWidth - img.width * ratio) / 2;
-    var centerShift_y = (displayHeight - img.height * ratio) / 2;
+    const canvas = ctx.canvas;
+    const hRatio = canvas.width / img.width;
+    const vRatio = canvas.height / img.height;
+    const ratio = Math.max(hRatio, vRatio);
+    const centerShift_x = (canvas.width - img.width * ratio) / 2;
+    const centerShift_y = (canvas.height - img.height * ratio) / 2;
     
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(
@@ -396,49 +346,40 @@ function canvas2() {
   const canvas = document.querySelector("#page7>canvas");
   const context = canvas.getContext("2d");
 
-  // Funzione per impostare dimensioni responsive
-  function setCanvasSize() {
-    const pixelRatio = window.devicePixelRatio || 1;
-    canvas.width = window.innerWidth * pixelRatio;
-    canvas.height = window.innerHeight * pixelRatio;
-    canvas.style.width = window.innerWidth + 'px';
-    canvas.style.height = window.innerHeight + 'px';
-    context.scale(pixelRatio, pixelRatio);
-  }
+  // FISSA LE DIMENSIONI SENZA PIXEL RATIO
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 
-  setCanvasSize();
-
-  // Event listeners per resize migliorati
-  let resizeTimeout;
+  let isResizing = false;
   window.addEventListener("resize", function () {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => {
-      setCanvasSize();
-      render();
-    }, 100);
-  });
-
-  // Orientamento mobile
-  window.addEventListener("orientationchange", function () {
-    setTimeout(() => {
-      setCanvasSize();
-      render();
-    }, 500);
+    if (!isResizing) {
+      isResizing = true;
+      setTimeout(() => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        render();
+        isResizing = false;
+      }, 50);
+    }
   });
 
   function files(index) {
-    // Assumo che le immagini siano in sequenza numerica
+    // Genero i nomi delle immagini in sequenza
     return `foto${73 + index}.jpg`;
   }
 
   const frameCount = 136;
   const images = [];
-  const imageSeq = {
-    frame: 1,
-  };
+  const imageSeq = { frame: 1 };
 
+  // PRECARICA TUTTE LE IMMAGINI
+  let loadedImages = 0;
   for (let i = 0; i < frameCount; i++) {
     const img = new Image();
+    img.onload = () => {
+      loadedImages++;
+      if (loadedImages === 1) render(); // Renderizza appena la prima è caricata
+    };
     img.src = files(i);
     images.push(img);
   }
@@ -457,24 +398,20 @@ function canvas2() {
     onUpdate: render,
   });
 
-  images[1].onload = render;
-
   function render() {
-    scaleImage(images[imageSeq.frame], context);
+    const currentImage = images[imageSeq.frame];
+    if (!currentImage || !currentImage.complete) return;
+    
+    scaleImage(currentImage, context);
   }
 
   function scaleImage(img, ctx) {
-    if (!img || !img.width || !img.height) return;
-    
-    var canvas = ctx.canvas;
-    var displayWidth = window.innerWidth;
-    var displayHeight = window.innerHeight;
-    
-    var hRatio = displayWidth / img.width;
-    var vRatio = displayHeight / img.height;
-    var ratio = Math.max(hRatio, vRatio);
-    var centerShift_x = (displayWidth - img.width * ratio) / 2;
-    var centerShift_y = (displayHeight - img.height * ratio) / 2;
+    const canvas = ctx.canvas;
+    const hRatio = canvas.width / img.width;
+    const vRatio = canvas.height / img.height;
+    const ratio = Math.max(hRatio, vRatio);
+    const centerShift_x = (canvas.width - img.width * ratio) / 2;
+    const centerShift_y = (canvas.height - img.height * ratio) / 2;
     
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(
@@ -500,12 +437,6 @@ function canvas2() {
 }
 canvas2()
 
-// Dimensioni responsive per il cerchio
-function getResponsiveCircleSize() {
-  const isMobile = window.innerWidth <= 768;
-  return isMobile ? "25rem" : "50rem";
-}
-
 gsap.to('.page7-cir', {
   scrollTrigger: {
     trigger: `.page7-cir`,
@@ -514,8 +445,8 @@ gsap.to('.page7-cir', {
     scroller: `#main`,
     scrub: .5,
   },
-  width: getResponsiveCircleSize(),
-  height: getResponsiveCircleSize(),
+  width: "50rem",
+  height: "50rem",
 })
 
 gsap.to('.page7-inner-cir', {
@@ -558,12 +489,6 @@ ScrollTrigger.create({
   onEnter: animateCounter,
 });
 
-// Font size responsive
-function getResponsiveFontSize(desktop, mobile) {
-  const isMobile = window.innerWidth <= 768;
-  return isMobile ? mobile : desktop;
-}
-
 gsap.to(counter, {
   scrollTrigger: {
     trigger: counter,
@@ -572,7 +497,7 @@ gsap.to(counter, {
     scroller: `#main`,
     scrub: .5,
   },
-  fontSize: getResponsiveFontSize("3rem", "2rem"),
+  fontSize: "3rem",
 })
 
 gsap.to(".page7-inner-cir-text", {
@@ -583,15 +508,18 @@ gsap.to(".page7-inner-cir-text", {
     scroller: `#main`,
     scrub: .5,
   },
-  fontSize: getResponsiveFontSize("1.5rem", "1rem"),
+  fontSize: "1.5rem",
 })
 
-// Refresh generale su resize per aggiornare le dimensioni responsive
-window.addEventListener("resize", () => {
-  ScrollTrigger.refresh();
-});
-
-// Gestione touch events per mobile
-if ('ontouchstart' in window) {
-  document.addEventListener('touchstart', function() {}, true);
+// FORZA IL REFRESH SU MOBILE
+if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+  window.addEventListener('orientationchange', () => {
+    setTimeout(() => {
+      location.reload();
+    }, 500);
+  });
 }
+
+// ASSICURATI CHE IL TOUCH FUNZIONI
+document.addEventListener('touchstart', function() {}, { passive: true });
+document.addEventListener('touchmove', function() {}, { passive: true });
