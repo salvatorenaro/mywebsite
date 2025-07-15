@@ -4,15 +4,11 @@ function loco() {
   // Detect mobile device
   const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
 
-  let locoScroll;
-  
   if (!isMobile) {
-    // Use Locomotive Scroll only on desktop
-    locoScroll = new LocomotiveScroll({
+    // Desktop: Use Locomotive Scroll
+    const locoScroll = new LocomotiveScroll({
       el: document.querySelector("#main"),
-      smooth: true,
-      multiplier: 1,
-      class: "is-reveal"
+      smooth: true
     });
 
     locoScroll.on("scroll", ScrollTrigger.update);
@@ -28,15 +24,18 @@ function loco() {
     });
 
     ScrollTrigger.addEventListener("refresh", () => locoScroll.update());
+    ScrollTrigger.refresh();
   } else {
-    // Mobile: use native scroll
-    ScrollTrigger.defaults({
-      scroller: window
-    });
+    // Mobile: Disable Locomotive, use native scroll
+    document.querySelector("#main").style.height = "auto";
+    document.querySelector("#main").style.overflow = "visible";
+    ScrollTrigger.refresh();
   }
-
-  ScrollTrigger.refresh();
 }
+
+// Detect mobile once at the start
+const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+const scrollerElement = isMobile ? window : "#main";
 
 loco();
 
@@ -52,7 +51,7 @@ gsap.to('#page2>.page2-content>h1>span', {
     trigger: `#page2>.page2-content>h1>span`,
     start: `top bottom`,
     end: `bottom top`,
-    scroller: window.innerWidth < 768 ? window : `#main`,
+    scroller: scrollerElement,
     scrub: .5
   },
   stagger: .2,
@@ -156,11 +155,11 @@ function canvas() {
     snap: "frame",
     ease: `none`,
     scrollTrigger: {
-      scrub: window.innerWidth < 768 ? 1 : .5, // Slower scrub on mobile
+      scrub: isMobile ? 1 : .5,
       trigger: `#page3`,
       start: `top top`,
       end: `250% top`,
-      scroller: window.innerWidth < 768 ? window : `#main`,
+      scroller: scrollerElement,
     },
     onUpdate: render,
   });
@@ -196,7 +195,7 @@ function canvas() {
   ScrollTrigger.create({
     trigger: "#page3",
     pin: true,
-    scroller: window.innerWidth < 768 ? window : `#main`,
+    scroller: scrollerElement,
     start: `top top`,
     end: `250% top`,
   });
@@ -216,7 +215,7 @@ gsap.to('#page4>.page4-content>h1>span', {
     trigger: `#page4>.page4-content>h1>span`,
     start: `top bottom`,
     end: `bottom top`,
-    scroller: window.innerWidth < 768 ? window : `#main`,
+    scroller: scrollerElement,
     scrub: .5
   },
   stagger: .2,
@@ -310,11 +309,11 @@ function canvas1() {
     snap: "frame",
     ease: `none`,
     scrollTrigger: {
-      scrub: window.innerWidth < 768 ? 1 : .5,
+      scrub: isMobile ? 1 : .5,
       trigger: `#page5`,
       start: `top top`,
       end: `250% top`,
-      scroller: window.innerWidth < 768 ? window : `#main`,
+      scroller: scrollerElement,
     },
     onUpdate: render,
   });
@@ -350,7 +349,7 @@ function canvas1() {
   ScrollTrigger.create({
     trigger: "#page5",
     pin: true,
-    scroller: window.innerWidth < 768 ? window : `#main`,
+    scroller: scrollerElement,
     start: `top top`,
     end: `250% top`,
   });
@@ -370,24 +369,18 @@ gsap.to('#page6>.page6-content>h1>span', {
     trigger: `#page6>.page6-content>h1>span`,
     start: `top bottom`,
     end: `bottom top`,
-    scroller: window.innerWidth < 768 ? window : `#main`,
+    scroller: scrollerElement,
     scrub: .5
   },
   stagger: .2,
   color: `#ffff`
 })
 
-// Enhanced mobile touch handling
-if (window.innerWidth < 768) {
-  // Disable some heavy animations on mobile for better performance
-  document.addEventListener('touchstart', function(e) {
-    // Prevent default touch behaviors that might interfere
-    if (e.touches.length > 1) {
-      e.preventDefault();
-    }
-  }, { passive: false });
-  
-  // Add mobile-specific optimizations
-  document.body.style.overflowX = 'hidden';
-  document.documentElement.style.overflowX = 'hidden';
+// Add this for mobile debugging
+if (isMobile) {
+  console.log("Mobile detected - using native scroll");
+  // Force refresh after a short delay to ensure everything is loaded
+  setTimeout(() => {
+    ScrollTrigger.refresh();
+  }, 1000);
 }
