@@ -87,7 +87,7 @@ function canvas() {
   });
 
   function files(index) {
-    var data = `
+    var data = ` 
     foto1.png.jpg
     foto2.jpg 
     foto3.jpg
@@ -98,11 +98,41 @@ function canvas() {
     foto8.jpg  
     foto9.jpg  
     foto10.jpg  
+    foto11.jpg  
+    foto12.jpg  
+    foto13.jpg  
+    foto14.jpg  
+    foto15.jpg 
+    foto16.jpg  
+    foto17.jpg 
+    foto18.jpg 
+    foto18.jpg  
+    foto19.jpg  
+    foto20.jpg  
+    foto21.jpg  
+    foto22.jpg  
+    foto23.jpg  
+    foto24.jpg  
+    foto25.jpg  
+    foto26.jpg  
+    foto27.jpg  
+    foto28.jpg  
+    foto29.jpg  
+    foto30.jpg  
+    foto31.jpg  
+    foto32.jpg  
+    foto33.jpg   
+    foto34.jpg
+    foto35.jpg
+    foto37.jpg
+    foto38.jpg
+    foto39.jpg
+    foto40.jpg 
   `;
     return data.split("\n")[index];
   }
 
-  const frameCount = 10;
+  const frameCount = 40;
   const images = [];
   const imageSeq = { frame: 1 };
 
@@ -231,11 +261,32 @@ function canvas1() {
     foto49.jpg  
     foto50.jpg  
     foto51.jpg  
+    foto52.jpg  
+    foto53.jpg  
+    foto54.jpg  
+    foto55.jpg  
+    foto56.jpg  
+    foto57.jpg  
+    foto58.jpg  
+    foto59.jpg  
+    foto60.jpg  
+    foto61.jpg  
+    foto62.jpg  
+    foto63.jpg  
+    foto64.jpg  
+    foto65.jpg  
+    foto66.jpg  
+    foto67.jpg  
+    foto68.jpg  
+    foto69.jpg  
+    foto70.jpg  
+    foto71.jpg  
+    foto72.jpg  
     `;
     return data.split("\n")[index];
   }
 
-  const frameCount = 10;
+  const frameCount = 31;
   const images = [];
   const imageSeq = { frame: 1 };
 
