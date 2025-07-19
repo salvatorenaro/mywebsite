@@ -1,51 +1,43 @@
 function loco() {
   gsap.registerPlugin(ScrollTrigger);
 
-  const isMobileOrTablet = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 1024;
+  const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
 
-  if (isMobileOrTablet) {
-    document.body.innerHTML = `
-      <div style="
-        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        display: flex; justify-content: center; align-items: center;
-        color: white; text-align: center; font-family: Arial; z-index: 9999;
-      ">
-        <div>
-          <h1 style="font-size: 2rem; margin-bottom: 20px;">Il sito web non è ancora disponibile da mobile</h1>
-          <p>Per favore, visita il sito da desktop</p>
-        </div>
-      </div>
-    `;
-    return; // Stop execution for mobile
+  if (!isMobile) {
+    // Desktop: Use Locomotive Scroll
+    const locoScroll = new LocomotiveScroll({
+      el: document.querySelector("#main"),
+      smooth: true
+    });
+
+    locoScroll.on("scroll", ScrollTrigger.update);
+    
+    ScrollTrigger.scrollerProxy("#main", {
+      scrollTop(value) {
+        return arguments.length ? locoScroll.scrollTo(value, 0, 0) : locoScroll.scroll.instance.scroll.y;
+      },
+      getBoundingClientRect() {
+        return { top: 0, left: 0, width: window.innerWidth, height: window.innerHeight };
+      },
+      pinType: document.querySelector("#main").style.transform ? "transform" : "fixed"
+    });
+
+    ScrollTrigger.addEventListener("refresh", () => locoScroll.update());
+    ScrollTrigger.refresh();
+  } else {
+    // Mobile: Disable Locomotive, use native scroll
+    document.querySelector("#main").style.height = "auto";
+    document.querySelector("#main").style.overflow = "visible";
+    ScrollTrigger.refresh();
   }
-
-  // Desktop code continues here
-  const locoScroll = new LocomotiveScroll({
-    el: document.querySelector("#main"),
-    smooth: true
-  });
-
-  locoScroll.on("scroll", ScrollTrigger.update);
-  
-  ScrollTrigger.scrollerProxy("#main", {
-    scrollTop(value) {
-      return arguments.length ? locoScroll.scrollTo(value, 0, 0) : locoScroll.scroll.instance.scroll.y;
-    },
-    getBoundingClientRect() {
-      return { top: 0, left: 0, width: window.innerWidth, height: window.innerHeight };
-    },
-    pinType: document.querySelector("#main").style.transform ? "transform" : "fixed"
-  });
-
-  ScrollTrigger.addEventListener("refresh", () => locoScroll.update());
-  ScrollTrigger.refresh();
 }
+
 
 const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
 const scrollerElement = isMobile ? window : "#main";
 
 loco();
+
 
 let breaker_1 = "";
 document.querySelector('#page2>.page2-content>h1').textContent.split("").forEach(function (breakword_1) {
@@ -363,6 +355,7 @@ function canvas1() {
 
 canvas1();
 
+
 let breaker_3 = "";
 document.querySelector('#page6>.page6-content>h1').textContent.split("").forEach(function (breakword_3) {
   breaker_3 += `<span>${breakword_3}</span>`;
@@ -380,6 +373,7 @@ gsap.to('#page6>.page6-content>h1>span', {
   stagger: .2,
   color: `#ffff`
 })
+
 
 if (isMobile) {
   console.log("Mobile detected - using native scroll");
