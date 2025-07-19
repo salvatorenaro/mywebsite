@@ -1,14 +1,24 @@
 function loco() {
   gsap.registerPlugin(ScrollTrigger);
 
-  const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+  const isMobileOrTablet = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 1024;
 
-  if (!isMobile) {
-    // Desktop: Use Locomotive Scroll
-    const locoScroll = new LocomotiveScroll({
-      el: document.querySelector("#main"),
-      smooth: true
-    });
+if (isMobileOrTablet) {
+  document.body.innerHTML = `
+    <div style="
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex; justify-content: center; align-items: center;
+      color: white; text-align: center; font-family: Arial; z-index: 9999;
+    ">
+      <div>
+        <h1 style="font-size: 2rem; margin-bottom: 20px;">Il sito web non è ancora disponibile da telefono</h1>
+        <p>Per favore, visita il sito da desktop</p>
+      </div>
+    </div>
+  `;
+  throw new Error("Mobile detected - stopping execution");
+}
 
     locoScroll.on("scroll", ScrollTrigger.update);
     
