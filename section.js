@@ -28,16 +28,19 @@ function loco() {
     // Mobile: Disable Locomotive, use native scroll
     document.querySelector("#main").style.height = "auto";
     document.querySelector("#main").style.overflow = "visible";
+    
+    // Ensure smooth scrolling on mobile
+    document.documentElement.style.scrollBehavior = "auto";
+    document.body.style.scrollBehavior = "auto";
+    
     ScrollTrigger.refresh();
   }
 }
-
 
 const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
 const scrollerElement = isMobile ? window : "#main";
 
 loco();
-
 
 let breaker_1 = "";
 document.querySelector('#page2>.page2-content>h1').textContent.split("").forEach(function (breakword_1) {
@@ -145,6 +148,9 @@ function canvas() {
       loadedImages++;
       if (loadedImages === 1) render(); // Render first frame immediately
     };
+    img.onerror = () => {
+      console.warn(`Failed to load image: ${files(i)}`);
+    };
     img.src = files(i);
     images.push(img);
   }
@@ -159,6 +165,8 @@ function canvas() {
       start: `top top`,
       end: `250% top`,
       scroller: scrollerElement,
+      invalidateOnRefresh: true,
+      refreshPriority: -1
     },
     onUpdate: render,
   });
@@ -197,6 +205,7 @@ function canvas() {
     scroller: scrollerElement,
     start: `top top`,
     end: `250% top`,
+    invalidateOnRefresh: true
   });
 }
 
@@ -298,6 +307,9 @@ function canvas1() {
       loadedImages++;
       if (loadedImages === 1) render();
     };
+    img.onerror = () => {
+      console.warn(`Failed to load image: ${files(i)}`);
+    };
     img.src = files(i);
     images.push(img);
   }
@@ -312,6 +324,8 @@ function canvas1() {
       start: `top top`,
       end: `250% top`,
       scroller: scrollerElement,
+      invalidateOnRefresh: true,
+      refreshPriority: -1
     },
     onUpdate: render,
   });
@@ -350,11 +364,11 @@ function canvas1() {
     scroller: scrollerElement,
     start: `top top`,
     end: `250% top`,
+    invalidateOnRefresh: true
   });
 }
 
 canvas1();
-
 
 let breaker_3 = "";
 document.querySelector('#page6>.page6-content>h1').textContent.split("").forEach(function (breakword_3) {
@@ -374,11 +388,42 @@ gsap.to('#page6>.page6-content>h1>span', {
   color: `#ffff`
 })
 
-
 if (isMobile) {
   console.log("Mobile detected - using native scroll");
-  // Force refresh after a short delay to ensure everything is loaded
-  setTimeout(() => {
-    ScrollTrigger.refresh();
-  }, 1000);
+  
+  // Mobile optimization
+  document.addEventListener('DOMContentLoaded', function() {
+    // Force refresh after DOM is loaded
+    setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 500);
+  });
+  
+  // Handle orientation change
+  window.addEventListener('orientationchange', function() {
+    setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 500);
+  });
+  
+  // Additional refresh on window load
+  window.addEventListener('load', function() {
+    setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 1000);
+  });
+  
+  // Touch optimization for better mobile performance
+  let ticking = false;
+  function updateScrollTrigger() {
+    if (!ticking) {
+      requestAnimationFrame(function() {
+        ScrollTrigger.update();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }
+  
+  window.addEventListener('touchmove', updateScrollTrigger, { passive: true });
 }
