@@ -25,48 +25,138 @@ function loco() {
     ScrollTrigger.addEventListener("refresh", () => locoScroll.update());
     ScrollTrigger.refresh();
   } else {
-    // Mobile: Disable Locomotive, use native scroll
-    document.querySelector("#main").style.height = "auto";
-    document.querySelector("#main").style.overflow = "visible";
+    // Mobile: Reset everything for native scroll
+    const mainElement = document.querySelector("#main");
+    if (mainElement) {
+      mainElement.style.transform = "none";
+      mainElement.style.height = "auto";
+      mainElement.style.overflow = "visible";
+      mainElement.style.position = "static";
+    }
     
-    // Ensure smooth scrolling on mobile
-    document.documentElement.style.scrollBehavior = "auto";
-    document.body.style.scrollBehavior = "auto";
+    // Clear any existing ScrollTrigger instances
+    ScrollTrigger.killAll();
     
+    // Reinitialize ScrollTrigger for mobile
     ScrollTrigger.refresh();
   }
 }
 
 const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
-const scrollerElement = isMobile ? window : "#main";
 
+// CRITICAL: Always use window for mobile
+const scrollerElement = window;
+
+// Initialize locomotive
 loco();
 
-let breaker_1 = "";
-document.querySelector('#page2>.page2-content>h1').textContent.split("").forEach(function (breakword_1) {
-  breaker_1 += `<span>${breakword_1}</span>`;
-  document.querySelector('#page2>.page2-content>h1').innerHTML = breaker_1;
-});
+// Wait for everything to load on mobile
+if (isMobile) {
+  // Force mobile viewport
+  const viewport = document.querySelector('meta[name="viewport"]');
+  if (viewport) {
+    viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, user-scalable=no');
+  }
+  
+  // Disable any smooth scrolling that might interfere
+  document.documentElement.style.scrollBehavior = "auto";
+  document.body.style.scrollBehavior = "auto";
+  
+  setTimeout(() => {
+    initAnimations();
+  }, 100);
+} else {
+  setTimeout(() => {
+    initAnimations();
+  }, 500);
+}
 
-gsap.to('#page2>.page2-content>h1>span', {
-  scrollTrigger: {
-    trigger: `#page2>.page2-content>h1>span`,
-    start: `top bottom`,
-    end: `bottom top`,
-    scroller: scrollerElement,
-    scrub: .5
-  },
-  stagger: .2,
-  color: `#ffff`
-})
+function initAnimations() {
+  // Text animation 1
+  let breaker_1 = "";
+  const h1_page2 = document.querySelector('#page2>.page2-content>h1');
+  if (h1_page2) {
+    h1_page2.textContent.split("").forEach(function (breakword_1) {
+      breaker_1 += `<span>${breakword_1}</span>`;
+    });
+    h1_page2.innerHTML = breaker_1;
+
+    gsap.to('#page2>.page2-content>h1>span', {
+      scrollTrigger: {
+        trigger: `#page2>.page2-content>h1`,
+        start: `top 80%`,
+        end: `bottom 20%`,
+        scroller: scrollerElement,
+        scrub: isMobile ? 1 : 0.5,
+        markers: false
+      },
+      stagger: .2,
+      color: `#ffff`
+    });
+  }
+
+  // Canvas 1
+  canvas();
+
+  // Text animation 2
+  let breaker_2 = "";
+  const h1_page4 = document.querySelector('#page4>.page4-content>h1');
+  if (h1_page4) {
+    h1_page4.textContent.split("").forEach(function (breakword_2) {
+      breaker_2 += `<span>${breakword_2}</span>`;
+    });
+    h1_page4.innerHTML = breaker_2;
+
+    gsap.to('#page4>.page4-content>h1>span', {
+      scrollTrigger: {
+        trigger: `#page4>.page4-content>h1`,
+        start: `top 80%`,
+        end: `bottom 20%`,
+        scroller: scrollerElement,
+        scrub: isMobile ? 1 : 0.5
+      },
+      stagger: .2,
+      color: `#ffff`
+    });
+  }
+
+  // Canvas 2
+  canvas1();
+
+  // Text animation 3
+  let breaker_3 = "";
+  const h1_page6 = document.querySelector('#page6>.page6-content>h1');
+  if (h1_page6) {
+    h1_page6.textContent.split("").forEach(function (breakword_3) {
+      breaker_3 += `<span>${breakword_3}</span>`;
+    });
+    h1_page6.innerHTML = breaker_3;
+
+    gsap.to('#page6>.page6-content>h1>span', {
+      scrollTrigger: {
+        trigger: `#page6>.page6-content>h1`,
+        start: `top 80%`,
+        end: `bottom 20%`,
+        scroller: scrollerElement,
+        scrub: isMobile ? 1 : 0.5
+      },
+      stagger: .2,
+      color: `#ffff`
+    });
+  }
+
+  // Final refresh
+  ScrollTrigger.refresh();
+}
 
 function canvas() {
   const canvas = document.querySelector("#page3>canvas");
+  if (!canvas) return;
+  
   const context = canvas.getContext("2d");
   
-  // Improved canvas sizing for mobile
   function resizeCanvas() {
-    const pixelRatio = window.devicePixelRatio || 1;
+    const pixelRatio = Math.min(window.devicePixelRatio || 1, 2); // Limit pixel ratio for mobile
     const displayWidth = window.innerWidth;
     const displayHeight = window.innerHeight;
     
@@ -80,13 +170,13 @@ function canvas() {
   
   resizeCanvas();
 
-  let resizeTimeout;
   window.addEventListener("resize", function () {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => {
+    clearTimeout(window.resizeTimeout);
+    window.resizeTimeout = setTimeout(() => {
       resizeCanvas();
       render();
-    }, 100);
+      ScrollTrigger.refresh();
+    }, 300);
   });
 
   function files(index) {
@@ -139,14 +229,13 @@ function canvas() {
   const images = [];
   const imageSeq = { frame: 1 };
 
-  // Preload images with better mobile handling
   let loadedImages = 0;
   for (let i = 0; i < frameCount; i++) {
     const img = new Image();
     img.crossOrigin = "anonymous";
     img.onload = () => {
       loadedImages++;
-      if (loadedImages === 1) render(); // Render first frame immediately
+      if (loadedImages === 1) render();
     };
     img.onerror = () => {
       console.warn(`Failed to load image: ${files(i)}`);
@@ -155,32 +244,31 @@ function canvas() {
     images.push(img);
   }
 
-  gsap.to(imageSeq, {
+  const tl = gsap.to(imageSeq, {
     frame: frameCount - 1,
     snap: "frame",
-    ease: `none`,
+    ease: "none",
     scrollTrigger: {
-      scrub: isMobile ? 1 : .5,
-      trigger: `#page3`,
-      start: `top top`,
-      end: `250% top`,
+      trigger: "#page3",
+      start: "top top",
+      end: "300% top",
       scroller: scrollerElement,
-      invalidateOnRefresh: true,
-      refreshPriority: -1
+      scrub: isMobile ? 2 : 1,
+      pin: true,
+      anticipatePin: 1,
+      refreshPriority: 1
     },
     onUpdate: render,
   });
 
   function render() {
-    if (images[imageSeq.frame] && images[imageSeq.frame].complete) {
-      requestAnimationFrame(() => {
-        scaleImage(images[imageSeq.frame], context);
-      });
+    const currentFrame = Math.round(imageSeq.frame);
+    if (images[currentFrame] && images[currentFrame].complete) {
+      scaleImage(images[currentFrame], context);
     }
   }
 
   function scaleImage(img, ctx) {
-    const canvas = ctx.canvas;
     const displayWidth = window.innerWidth;
     const displayHeight = window.innerHeight;
     
@@ -198,43 +286,16 @@ function canvas() {
       img.width * ratio, img.height * ratio
     );
   }
-  
-  ScrollTrigger.create({
-    trigger: "#page3",
-    pin: true,
-    scroller: scrollerElement,
-    start: `top top`,
-    end: `250% top`,
-    invalidateOnRefresh: true
-  });
 }
-
-canvas();
-
-let breaker_2 = "";
-document.querySelector('#page4>.page4-content>h1').textContent.split("").forEach(function (breakword_2) {
-  breaker_2 += `<span>${breakword_2}</span>`;
-  document.querySelector('#page4>.page4-content>h1').innerHTML = breaker_2;
-});
-
-gsap.to('#page4>.page4-content>h1>span', {
-  scrollTrigger: {
-    trigger: `#page4>.page4-content>h1>span`,
-    start: `top bottom`,
-    end: `bottom top`,
-    scroller: scrollerElement,
-    scrub: .5
-  },
-  stagger: .2,
-  color: `#ffff`
-})
 
 function canvas1() {
   const canvas = document.querySelector("#page5>canvas");
+  if (!canvas) return;
+  
   const context = canvas.getContext("2d");
 
   function resizeCanvas() {
-    const pixelRatio = window.devicePixelRatio || 1;
+    const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
     const displayWidth = window.innerWidth;
     const displayHeight = window.innerHeight;
     
@@ -248,13 +309,13 @@ function canvas1() {
   
   resizeCanvas();
 
-  let resizeTimeout;
   window.addEventListener("resize", function () {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => {
+    clearTimeout(window.resizeTimeout1);
+    window.resizeTimeout1 = setTimeout(() => {
       resizeCanvas();
       render();
-    }, 100);
+      ScrollTrigger.refresh();
+    }, 300);
   });
 
   function files(index) {
@@ -314,32 +375,31 @@ function canvas1() {
     images.push(img);
   }
 
-  gsap.to(imageSeq, {
+  const tl2 = gsap.to(imageSeq, {
     frame: frameCount - 1,
     snap: "frame",
-    ease: `none`,
+    ease: "none",
     scrollTrigger: {
-      scrub: isMobile ? 1 : .5,
-      trigger: `#page5`,
-      start: `top top`,
-      end: `250% top`,
+      trigger: "#page5",
+      start: "top top",
+      end: "300% top",
       scroller: scrollerElement,
-      invalidateOnRefresh: true,
-      refreshPriority: -1
+      scrub: isMobile ? 2 : 1,
+      pin: true,
+      anticipatePin: 1,
+      refreshPriority: 1
     },
     onUpdate: render,
   });
 
   function render() {
-    if (images[imageSeq.frame] && images[imageSeq.frame].complete) {
-      requestAnimationFrame(() => {
-        scaleImage(images[imageSeq.frame], context);
-      });
+    const currentFrame = Math.round(imageSeq.frame);
+    if (images[currentFrame] && images[currentFrame].complete) {
+      scaleImage(images[currentFrame], context);
     }
   }
 
   function scaleImage(img, ctx) {
-    const canvas = ctx.canvas;
     const displayWidth = window.innerWidth;
     const displayHeight = window.innerHeight;
     
@@ -357,73 +417,36 @@ function canvas1() {
       img.width * ratio, img.height * ratio
     );
   }
-  
-  ScrollTrigger.create({
-    trigger: "#page5",
-    pin: true,
-    scroller: scrollerElement,
-    start: `top top`,
-    end: `250% top`,
-    invalidateOnRefresh: true
-  });
 }
 
-canvas1();
-
-let breaker_3 = "";
-document.querySelector('#page6>.page6-content>h1').textContent.split("").forEach(function (breakword_3) {
-  breaker_3 += `<span>${breakword_3}</span>`;
-  document.querySelector('#page6>.page6-content>h1').innerHTML = breaker_3;
-});
-
-gsap.to('#page6>.page6-content>h1>span', {
-  scrollTrigger: {
-    trigger: `#page6>.page6-content>h1>span`,
-    start: `top bottom`,
-    end: `bottom top`,
-    scroller: scrollerElement,
-    scrub: .5
-  },
-  stagger: .2,
-  color: `#ffff`
-})
-
+// Mobile specific optimizations
 if (isMobile) {
-  console.log("Mobile detected - using native scroll");
+  console.log("Mobile mode active");
   
-  // Mobile optimization
-  document.addEventListener('DOMContentLoaded', function() {
-    // Force refresh after DOM is loaded
-    setTimeout(() => {
-      ScrollTrigger.refresh();
-    }, 500);
-  });
+  // Prevent iOS bounce scroll
+  document.addEventListener('touchmove', function(e) {
+    if (e.target.tagName !== 'CANVAS') {
+      e.preventDefault();
+    }
+  }, { passive: false });
   
   // Handle orientation change
   window.addEventListener('orientationchange', function() {
     setTimeout(() => {
-      ScrollTrigger.refresh();
+      ScrollTrigger.killAll();
+      initAnimations();
     }, 500);
   });
   
-  // Additional refresh on window load
-  window.addEventListener('load', function() {
-    setTimeout(() => {
-      ScrollTrigger.refresh();
-    }, 1000);
-  });
-  
-  // Touch optimization for better mobile performance
-  let ticking = false;
-  function updateScrollTrigger() {
-    if (!ticking) {
-      requestAnimationFrame(function() {
+  // Optimize touch scrolling
+  let isScrolling = false;
+  window.addEventListener('scroll', function() {
+    if (!isScrolling) {
+      window.requestAnimationFrame(function() {
         ScrollTrigger.update();
-        ticking = false;
+        isScrolling = false;
       });
-      ticking = true;
+      isScrolling = true;
     }
-  }
-  
-  window.addEventListener('touchmove', updateScrollTrigger, { passive: true });
+  }, { passive: true });
 }
