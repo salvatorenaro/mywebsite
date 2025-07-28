@@ -1,13 +1,18 @@
 function loco() {
   gsap.registerPlugin(ScrollTrigger);
 
+  // Detect mobile device
   const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
 
+  let locoScroll;
+  
   if (!isMobile) {
-    // Desktop: Use Locomotive Scroll
-    const locoScroll = new LocomotiveScroll({
+    // Use Locomotive Scroll only on desktop
+    locoScroll = new LocomotiveScroll({
       el: document.querySelector("#main"),
-      smooth: true
+      smooth: true,
+      multiplier: 1,
+      class: "is-reveal"
     });
 
     locoScroll.on("scroll", ScrollTrigger.update);
@@ -23,146 +28,44 @@ function loco() {
     });
 
     ScrollTrigger.addEventListener("refresh", () => locoScroll.update());
-    ScrollTrigger.refresh();
   } else {
-    // Mobile: Reset everything for native scroll
-    const mainElement = document.querySelector("#main");
-    if (mainElement) {
-      mainElement.style.transform = "none";
-      mainElement.style.height = "auto";
-      mainElement.style.overflow = "visible";
-      mainElement.style.position = "static";
-    }
-    
-    // Clear any existing ScrollTrigger instances
-    ScrollTrigger.killAll();
-    
-    // Reinitialize ScrollTrigger for mobile
-    ScrollTrigger.refresh();
+    // Mobile: use native scroll
+    ScrollTrigger.defaults({
+      scroller: window
+    });
   }
+
+  ScrollTrigger.refresh();
 }
 
-const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
-
-// CRITICAL: Always use window for mobile
-const scrollerElement = isMobile ? window : "#main";
-
-// Initialize locomotive
 loco();
 
-// Wait for everything to load on mobile
-if (isMobile) {
-  // Force mobile viewport
-  const viewport = document.querySelector('meta[name="viewport"]');
-  if (viewport) {
-    viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0');
-  }
-  
-  // Disable any smooth scrolling that might interfere
-  document.documentElement.style.scrollBehavior = "auto";
-  document.body.style.scrollBehavior = "auto";
-  
-  // Add mobile-specific CSS
-  document.body.style.overflowX = "hidden";
-  document.documentElement.style.overflowX = "hidden";
-  
-  setTimeout(() => {
-    initAnimations();
-  }, 200);
-} else {
-  setTimeout(() => {
-    initAnimations();
-  }, 500);
-}
+// Text animation for page2
+let breaker_1 = "";
+document.querySelector('#page2>.page2-content>h1').textContent.split("").forEach(function (breakword_1) {
+  breaker_1 += `<span>${breakword_1}</span>`;
+  document.querySelector('#page2>.page2-content>h1').innerHTML = breaker_1;
+});
 
-function initAnimations() {
-  // Text animation 1
-  let breaker_1 = "";
-  const h1_page2 = document.querySelector('#page2>.page2-content>h1');
-  if (h1_page2) {
-    h1_page2.textContent.split("").forEach(function (breakword_1) {
-      breaker_1 += `<span>${breakword_1}</span>`;
-    });
-    h1_page2.innerHTML = breaker_1;
-
-    gsap.to('#page2>.page2-content>h1>span', {
-      scrollTrigger: {
-        trigger: `#page2>.page2-content>h1`,
-        start: `top 80%`,
-        end: `bottom 20%`,
-        scroller: scrollerElement,
-        scrub: isMobile ? 2 : 0.5,
-        markers: false
-      },
-      stagger: isMobile ? 0.1 : 0.2,
-      color: `#ffff`
-    });
-  }
-
-  // Canvas 1
-  canvas();
-
-  // Text animation 2
-  let breaker_2 = "";
-  const h1_page4 = document.querySelector('#page4>.page4-content>h1');
-  if (h1_page4) {
-    h1_page4.textContent.split("").forEach(function (breakword_2) {
-      breaker_2 += `<span>${breakword_2}</span>`;
-    });
-    h1_page4.innerHTML = breaker_2;
-
-    gsap.to('#page4>.page4-content>h1>span', {
-      scrollTrigger: {
-        trigger: `#page4>.page4-content>h1`,
-        start: `top 80%`,
-        end: `bottom 20%`,
-        scroller: scrollerElement,
-        scrub: isMobile ? 2 : 0.5
-      },
-      stagger: isMobile ? 0.1 : 0.2,
-      color: `#ffff`
-    });
-  }
-
-  // Canvas 2
-  canvas1();
-
-  // Text animation 3
-  let breaker_3 = "";
-  const h1_page6 = document.querySelector('#page6>.page6-content>h1');
-  if (h1_page6) {
-    h1_page6.textContent.split("").forEach(function (breakword_3) {
-      breaker_3 += `<span>${breakword_3}</span>`;
-    });
-    h1_page6.innerHTML = breaker_3;
-
-    gsap.to('#page6>.page6-content>h1>span', {
-      scrollTrigger: {
-        trigger: `#page6>.page6-content>h1`,
-        start: `top 80%`,
-        end: `bottom 20%`,
-        scroller: scrollerElement,
-        scrub: isMobile ? 2 : 0.5
-      },
-      stagger: isMobile ? 0.1 : 0.2,
-      color: `#ffff`
-    });
-  }
-
-  // Final refresh
-  setTimeout(() => {
-    ScrollTrigger.refresh();
-  }, 100);
-}
+gsap.to('#page2>.page2-content>h1>span', {
+  scrollTrigger: {
+    trigger: `#page2>.page2-content>h1>span`,
+    start: `top bottom`,
+    end: `bottom top`,
+    scroller: window.innerWidth < 768 ? window : `#main`,
+    scrub: .5
+  },
+  stagger: .2,
+  color: `#ffff`
+})
 
 function canvas() {
   const canvas = document.querySelector("#page3>canvas");
-  if (!canvas) return;
-  
   const context = canvas.getContext("2d");
   
+  // Improved canvas sizing for mobile
   function resizeCanvas() {
-    const pixelRatio = isMobile ? 1 : Math.min(window.devicePixelRatio || 1, 2);
+    const pixelRatio = window.devicePixelRatio || 1;
     const displayWidth = window.innerWidth;
     const displayHeight = window.innerHeight;
     
@@ -182,37 +85,11 @@ function canvas() {
     resizeTimeout = setTimeout(() => {
       resizeCanvas();
       render();
-      ScrollTrigger.refresh();
-    }, isMobile ? 500 : 300);
+    }, 100);
   });
 
   function files(index) {
-    // Versione mobile: ridotto a 20 immagini per performance migliori
-    const mobileData = `
-    foto1.png.jpg
-    foto3.jpg
-    foto5.jpg  
-    foto7.jpg  
-    foto9.jpg  
-    foto11.jpg  
-    foto13.jpg  
-    foto15.jpg 
-    foto17.jpg 
-    foto19.jpg  
-    foto21.jpg  
-    foto23.jpg  
-    foto25.jpg  
-    foto27.jpg  
-    foto29.jpg  
-    foto31.jpg  
-    foto33.jpg   
-    foto35.jpg
-    foto37.jpg
-    foto39.jpg
-    `;
-    
-    // Versione desktop: tutte le immagini
-    const desktopData = `
+    var data = `
     foto1.png.jpg
     foto2.jpg 
     foto3.jpg
@@ -252,63 +129,52 @@ function canvas() {
     foto37.jpg
     foto38.jpg
     foto39.jpg
-    foto40.jpg 
-    `;
-    
-    const data = isMobile ? mobileData : desktopData;
+    foto40.jpg
+  `;
     return data.split("\n")[index];
   }
 
-  const frameCount = isMobile ? 20 : 40;
+  const frameCount = 40;
   const images = [];
   const imageSeq = { frame: 1 };
 
+  // Preload images with better mobile handling
   let loadedImages = 0;
-  
-  // Preload con priorità per mobile
   for (let i = 0; i < frameCount; i++) {
     const img = new Image();
-    if (isMobile) {
-      img.loading = "eager";
-    }
     img.crossOrigin = "anonymous";
     img.onload = () => {
       loadedImages++;
-      if (loadedImages === 1) render();
-    };
-    img.onerror = () => {
-      console.warn(`Failed to load image: ${files(i)}`);
+      if (loadedImages === 1) render(); // Render first frame immediately
     };
     img.src = files(i);
     images.push(img);
   }
 
-  const tl = gsap.to(imageSeq, {
+  gsap.to(imageSeq, {
     frame: frameCount - 1,
     snap: "frame",
-    ease: "none",
+    ease: `none`,
     scrollTrigger: {
-      trigger: "#page3",
-      start: "top top",
-      end: isMobile ? "200% top" : "300% top",
-      scroller: scrollerElement,
-      scrub: isMobile ? 3 : 1,
-      pin: true,
-      anticipatePin: 1,
-      refreshPriority: 1,
-      invalidateOnRefresh: true
+      scrub: window.innerWidth < 768 ? 1 : .5, // Slower scrub on mobile
+      trigger: `#page3`,
+      start: `top top`,
+      end: `250% top`,
+      scroller: window.innerWidth < 768 ? window : `#main`,
     },
     onUpdate: render,
   });
 
   function render() {
-    const currentFrame = Math.round(imageSeq.frame);
-    if (images[currentFrame] && images[currentFrame].complete) {
-      scaleImage(images[currentFrame], context);
+    if (images[imageSeq.frame] && images[imageSeq.frame].complete) {
+      requestAnimationFrame(() => {
+        scaleImage(images[imageSeq.frame], context);
+      });
     }
   }
 
   function scaleImage(img, ctx) {
+    const canvas = ctx.canvas;
     const displayWidth = window.innerWidth;
     const displayHeight = window.innerHeight;
     
@@ -326,16 +192,43 @@ function canvas() {
       img.width * ratio, img.height * ratio
     );
   }
+  
+  ScrollTrigger.create({
+    trigger: "#page3",
+    pin: true,
+    scroller: window.innerWidth < 768 ? window : `#main`,
+    start: `top top`,
+    end: `250% top`,
+  });
 }
+
+canvas();
+
+// Text animation for page4
+let breaker_2 = "";
+document.querySelector('#page4>.page4-content>h1').textContent.split("").forEach(function (breakword_2) {
+  breaker_2 += `<span>${breakword_2}</span>`;
+  document.querySelector('#page4>.page4-content>h1').innerHTML = breaker_2;
+});
+
+gsap.to('#page4>.page4-content>h1>span', {
+  scrollTrigger: {
+    trigger: `#page4>.page4-content>h1>span`,
+    start: `top bottom`,
+    end: `bottom top`,
+    scroller: window.innerWidth < 768 ? window : `#main`,
+    scrub: .5
+  },
+  stagger: .2,
+  color: `#ffff`
+})
 
 function canvas1() {
   const canvas = document.querySelector("#page5>canvas");
-  if (!canvas) return;
-  
   const context = canvas.getContext("2d");
 
   function resizeCanvas() {
-    const pixelRatio = isMobile ? 1 : Math.min(window.devicePixelRatio || 1, 2);
+    const pixelRatio = window.devicePixelRatio || 1;
     const displayWidth = window.innerWidth;
     const displayHeight = window.innerHeight;
     
@@ -349,39 +242,17 @@ function canvas1() {
   
   resizeCanvas();
 
-  let resizeTimeout1;
+  let resizeTimeout;
   window.addEventListener("resize", function () {
-    clearTimeout(resizeTimeout1);
-    resizeTimeout1 = setTimeout(() => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
       resizeCanvas();
       render();
-      ScrollTrigger.refresh();
-    }, isMobile ? 500 : 300);
+    }, 100);
   });
 
   function files(index) {
-    // Versione mobile: ridotto a 16 immagini
-    const mobileData = `
-    foto41.jpg  
-    foto43.jpg  
-    foto45.jpg  
-    foto47.jpg  
-    foto49.jpg  
-    foto51.jpg  
-    foto53.jpg  
-    foto55.jpg  
-    foto57.jpg  
-    foto59.jpg  
-    foto61.jpg  
-    foto63.jpg  
-    foto65.jpg  
-    foto67.jpg  
-    foto69.jpg  
-    foto71.jpg  
-    `;
-    
-    // Versione desktop: tutte le immagini
-    const desktopData = `
+    var data = `
     foto41.jpg  
     foto42.jpg  
     foto43.jpg  
@@ -415,59 +286,49 @@ function canvas1() {
     foto71.jpg  
     foto72.jpg  
     `;
-    
-    const data = isMobile ? mobileData : desktopData;
     return data.split("\n")[index];
   }
 
-  const frameCount = isMobile ? 16 : 31;
+  const frameCount = 31;
   const images = [];
   const imageSeq = { frame: 1 };
 
   let loadedImages = 0;
   for (let i = 0; i < frameCount; i++) {
     const img = new Image();
-    if (isMobile) {
-      img.loading = "eager";
-    }
     img.crossOrigin = "anonymous";
     img.onload = () => {
       loadedImages++;
       if (loadedImages === 1) render();
     };
-    img.onerror = () => {
-      console.warn(`Failed to load image: ${files(i)}`);
-    };
     img.src = files(i);
     images.push(img);
   }
 
-  const tl2 = gsap.to(imageSeq, {
+  gsap.to(imageSeq, {
     frame: frameCount - 1,
     snap: "frame",
-    ease: "none",
+    ease: `none`,
     scrollTrigger: {
-      trigger: "#page5",
-      start: "top top",
-      end: isMobile ? "200% top" : "300% top",
-      scroller: scrollerElement,
-      scrub: isMobile ? 3 : 1,
-      pin: true,
-      anticipatePin: 1,
-      refreshPriority: 1,
-      invalidateOnRefresh: true
+      scrub: window.innerWidth < 768 ? 1 : .5,
+      trigger: `#page5`,
+      start: `top top`,
+      end: `250% top`,
+      scroller: window.innerWidth < 768 ? window : `#main`,
     },
     onUpdate: render,
   });
 
   function render() {
-    const currentFrame = Math.round(imageSeq.frame);
-    if (images[currentFrame] && images[currentFrame].complete) {
-      scaleImage(images[currentFrame], context);
+    if (images[imageSeq.frame] && images[imageSeq.frame].complete) {
+      requestAnimationFrame(() => {
+        scaleImage(images[imageSeq.frame], context);
+      });
     }
   }
 
   function scaleImage(img, ctx) {
+    const canvas = ctx.canvas;
     const displayWidth = window.innerWidth;
     const displayHeight = window.innerHeight;
     
@@ -485,57 +346,48 @@ function canvas1() {
       img.width * ratio, img.height * ratio
     );
   }
+  
+  ScrollTrigger.create({
+    trigger: "#page5",
+    pin: true,
+    scroller: window.innerWidth < 768 ? window : `#main`,
+    start: `top top`,
+    end: `250% top`,
+  });
 }
 
-// Mobile specific optimizations
-if (isMobile) {
-  console.log("Mobile mode active - Optimized version");
-  
-  // Prevent iOS bounce scroll più efficace
-  let startY = 0;
+canvas1();
+
+// Text animation for page6
+let breaker_3 = "";
+document.querySelector('#page6>.page6-content>h1').textContent.split("").forEach(function (breakword_3) {
+  breaker_3 += `<span>${breakword_3}</span>`;
+  document.querySelector('#page6>.page6-content>h1').innerHTML = breaker_3;
+});
+
+gsap.to('#page6>.page6-content>h1>span', {
+  scrollTrigger: {
+    trigger: `#page6>.page6-content>h1>span`,
+    start: `top bottom`,
+    end: `bottom top`,
+    scroller: window.innerWidth < 768 ? window : `#main`,
+    scrub: .5
+  },
+  stagger: .2,
+  color: `#ffff`
+})
+
+// Enhanced mobile touch handling
+if (window.innerWidth < 768) {
+  // Disable some heavy animations on mobile for better performance
   document.addEventListener('touchstart', function(e) {
-    startY = e.touches[0].pageY;
-  }, { passive: true });
-  
-  document.addEventListener('touchmove', function(e) {
-    const y = e.touches[0].pageY;
-    const isScrollingUp = y > startY;
-    const isScrollingDown = y < startY;
-    
-    // Previeni il bounce solo se necessario
-    if ((window.scrollY === 0 && isScrollingUp) || 
-        (window.scrollY >= document.documentElement.scrollHeight - window.innerHeight && isScrollingDown)) {
+    // Prevent default touch behaviors that might interfere
+    if (e.touches.length > 1) {
       e.preventDefault();
     }
   }, { passive: false });
   
-  // Handle orientation change più robusto
-  let orientationTimeout;
-  window.addEventListener('orientationchange', function() {
-    clearTimeout(orientationTimeout);
-    orientationTimeout = setTimeout(() => {
-      // Force refresh dopo il cambio orientamento
-      window.location.reload();
-    }, 1000);
-  });
-  
-  // Ottimizza le performance di scroll
-  let ticking = false;
-  function updateScrollTrigger() {
-    ScrollTrigger.update();
-    ticking = false;
-  }
-  
-  window.addEventListener('scroll', function() {
-    if (!ticking) {
-      requestAnimationFrame(updateScrollTrigger);
-      ticking = true;
-    }
-  }, { passive: true });
-  
-  // Gestione memoria per mobile
-  window.addEventListener('beforeunload', function() {
-    ScrollTrigger.killAll();
-    gsap.killTweensOf("*");
-  });
+  // Add mobile-specific optimizations
+  document.body.style.overflowX = 'hidden';
+  document.documentElement.style.overflowX = 'hidden';
 }
