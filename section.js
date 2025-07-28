@@ -45,7 +45,7 @@ function loco() {
 const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
 
 // CRITICAL: Always use window for mobile
-const scrollerElement = window;
+const scrollerElement = isMobile ? window : "#main";
 
 // Initialize locomotive
 loco();
@@ -55,16 +55,20 @@ if (isMobile) {
   // Force mobile viewport
   const viewport = document.querySelector('meta[name="viewport"]');
   if (viewport) {
-    viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, user-scalable=no');
+    viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0');
   }
   
   // Disable any smooth scrolling that might interfere
   document.documentElement.style.scrollBehavior = "auto";
   document.body.style.scrollBehavior = "auto";
   
+  // Add mobile-specific CSS
+  document.body.style.overflowX = "hidden";
+  document.documentElement.style.overflowX = "hidden";
+  
   setTimeout(() => {
     initAnimations();
-  }, 100);
+  }, 200);
 } else {
   setTimeout(() => {
     initAnimations();
@@ -87,10 +91,10 @@ function initAnimations() {
         start: `top 80%`,
         end: `bottom 20%`,
         scroller: scrollerElement,
-        scrub: isMobile ? 1 : 0.5,
+        scrub: isMobile ? 2 : 0.5,
         markers: false
       },
-      stagger: .2,
+      stagger: isMobile ? 0.1 : 0.2,
       color: `#ffff`
     });
   }
@@ -113,9 +117,9 @@ function initAnimations() {
         start: `top 80%`,
         end: `bottom 20%`,
         scroller: scrollerElement,
-        scrub: isMobile ? 1 : 0.5
+        scrub: isMobile ? 2 : 0.5
       },
-      stagger: .2,
+      stagger: isMobile ? 0.1 : 0.2,
       color: `#ffff`
     });
   }
@@ -138,15 +142,17 @@ function initAnimations() {
         start: `top 80%`,
         end: `bottom 20%`,
         scroller: scrollerElement,
-        scrub: isMobile ? 1 : 0.5
+        scrub: isMobile ? 2 : 0.5
       },
-      stagger: .2,
+      stagger: isMobile ? 0.1 : 0.2,
       color: `#ffff`
     });
   }
 
   // Final refresh
-  ScrollTrigger.refresh();
+  setTimeout(() => {
+    ScrollTrigger.refresh();
+  }, 100);
 }
 
 function canvas() {
@@ -156,7 +162,7 @@ function canvas() {
   const context = canvas.getContext("2d");
   
   function resizeCanvas() {
-    const pixelRatio = Math.min(window.devicePixelRatio || 1, 2); // Limit pixel ratio for mobile
+    const pixelRatio = isMobile ? 1 : Math.min(window.devicePixelRatio || 1, 2);
     const displayWidth = window.innerWidth;
     const displayHeight = window.innerHeight;
     
@@ -170,17 +176,43 @@ function canvas() {
   
   resizeCanvas();
 
+  let resizeTimeout;
   window.addEventListener("resize", function () {
-    clearTimeout(window.resizeTimeout);
-    window.resizeTimeout = setTimeout(() => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
       resizeCanvas();
       render();
       ScrollTrigger.refresh();
-    }, 300);
+    }, isMobile ? 500 : 300);
   });
 
   function files(index) {
-    var data = ` 
+    // Versione mobile: ridotto a 20 immagini per performance migliori
+    const mobileData = `
+    foto1.png.jpg
+    foto3.jpg
+    foto5.jpg  
+    foto7.jpg  
+    foto9.jpg  
+    foto11.jpg  
+    foto13.jpg  
+    foto15.jpg 
+    foto17.jpg 
+    foto19.jpg  
+    foto21.jpg  
+    foto23.jpg  
+    foto25.jpg  
+    foto27.jpg  
+    foto29.jpg  
+    foto31.jpg  
+    foto33.jpg   
+    foto35.jpg
+    foto37.jpg
+    foto39.jpg
+    `;
+    
+    // Versione desktop: tutte le immagini
+    const desktopData = `
     foto1.png.jpg
     foto2.jpg 
     foto3.jpg
@@ -221,17 +253,24 @@ function canvas() {
     foto38.jpg
     foto39.jpg
     foto40.jpg 
-  `;
+    `;
+    
+    const data = isMobile ? mobileData : desktopData;
     return data.split("\n")[index];
   }
 
-  const frameCount = 40;
+  const frameCount = isMobile ? 20 : 40;
   const images = [];
   const imageSeq = { frame: 1 };
 
   let loadedImages = 0;
+  
+  // Preload con priorità per mobile
   for (let i = 0; i < frameCount; i++) {
     const img = new Image();
+    if (isMobile) {
+      img.loading = "eager";
+    }
     img.crossOrigin = "anonymous";
     img.onload = () => {
       loadedImages++;
@@ -251,12 +290,13 @@ function canvas() {
     scrollTrigger: {
       trigger: "#page3",
       start: "top top",
-      end: "300% top",
+      end: isMobile ? "200% top" : "300% top",
       scroller: scrollerElement,
-      scrub: isMobile ? 2 : 1,
+      scrub: isMobile ? 3 : 1,
       pin: true,
       anticipatePin: 1,
-      refreshPriority: 1
+      refreshPriority: 1,
+      invalidateOnRefresh: true
     },
     onUpdate: render,
   });
@@ -295,7 +335,7 @@ function canvas1() {
   const context = canvas.getContext("2d");
 
   function resizeCanvas() {
-    const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+    const pixelRatio = isMobile ? 1 : Math.min(window.devicePixelRatio || 1, 2);
     const displayWidth = window.innerWidth;
     const displayHeight = window.innerHeight;
     
@@ -309,17 +349,39 @@ function canvas1() {
   
   resizeCanvas();
 
+  let resizeTimeout1;
   window.addEventListener("resize", function () {
-    clearTimeout(window.resizeTimeout1);
-    window.resizeTimeout1 = setTimeout(() => {
+    clearTimeout(resizeTimeout1);
+    resizeTimeout1 = setTimeout(() => {
       resizeCanvas();
       render();
       ScrollTrigger.refresh();
-    }, 300);
+    }, isMobile ? 500 : 300);
   });
 
   function files(index) {
-    var data = `
+    // Versione mobile: ridotto a 16 immagini
+    const mobileData = `
+    foto41.jpg  
+    foto43.jpg  
+    foto45.jpg  
+    foto47.jpg  
+    foto49.jpg  
+    foto51.jpg  
+    foto53.jpg  
+    foto55.jpg  
+    foto57.jpg  
+    foto59.jpg  
+    foto61.jpg  
+    foto63.jpg  
+    foto65.jpg  
+    foto67.jpg  
+    foto69.jpg  
+    foto71.jpg  
+    `;
+    
+    // Versione desktop: tutte le immagini
+    const desktopData = `
     foto41.jpg  
     foto42.jpg  
     foto43.jpg  
@@ -353,16 +415,21 @@ function canvas1() {
     foto71.jpg  
     foto72.jpg  
     `;
+    
+    const data = isMobile ? mobileData : desktopData;
     return data.split("\n")[index];
   }
 
-  const frameCount = 31;
+  const frameCount = isMobile ? 16 : 31;
   const images = [];
   const imageSeq = { frame: 1 };
 
   let loadedImages = 0;
   for (let i = 0; i < frameCount; i++) {
     const img = new Image();
+    if (isMobile) {
+      img.loading = "eager";
+    }
     img.crossOrigin = "anonymous";
     img.onload = () => {
       loadedImages++;
@@ -382,12 +449,13 @@ function canvas1() {
     scrollTrigger: {
       trigger: "#page5",
       start: "top top",
-      end: "300% top",
+      end: isMobile ? "200% top" : "300% top",
       scroller: scrollerElement,
-      scrub: isMobile ? 2 : 1,
+      scrub: isMobile ? 3 : 1,
       pin: true,
       anticipatePin: 1,
-      refreshPriority: 1
+      refreshPriority: 1,
+      invalidateOnRefresh: true
     },
     onUpdate: render,
   });
@@ -421,32 +489,53 @@ function canvas1() {
 
 // Mobile specific optimizations
 if (isMobile) {
-  console.log("Mobile mode active");
+  console.log("Mobile mode active - Optimized version");
   
-  // Prevent iOS bounce scroll
+  // Prevent iOS bounce scroll più efficace
+  let startY = 0;
+  document.addEventListener('touchstart', function(e) {
+    startY = e.touches[0].pageY;
+  }, { passive: true });
+  
   document.addEventListener('touchmove', function(e) {
-    if (e.target.tagName !== 'CANVAS') {
+    const y = e.touches[0].pageY;
+    const isScrollingUp = y > startY;
+    const isScrollingDown = y < startY;
+    
+    // Previeni il bounce solo se necessario
+    if ((window.scrollY === 0 && isScrollingUp) || 
+        (window.scrollY >= document.documentElement.scrollHeight - window.innerHeight && isScrollingDown)) {
       e.preventDefault();
     }
   }, { passive: false });
   
-  // Handle orientation change
+  // Handle orientation change più robusto
+  let orientationTimeout;
   window.addEventListener('orientationchange', function() {
-    setTimeout(() => {
-      ScrollTrigger.killAll();
-      initAnimations();
-    }, 500);
+    clearTimeout(orientationTimeout);
+    orientationTimeout = setTimeout(() => {
+      // Force refresh dopo il cambio orientamento
+      window.location.reload();
+    }, 1000);
   });
   
-  // Optimize touch scrolling
-  let isScrolling = false;
+  // Ottimizza le performance di scroll
+  let ticking = false;
+  function updateScrollTrigger() {
+    ScrollTrigger.update();
+    ticking = false;
+  }
+  
   window.addEventListener('scroll', function() {
-    if (!isScrolling) {
-      window.requestAnimationFrame(function() {
-        ScrollTrigger.update();
-        isScrolling = false;
-      });
-      isScrolling = true;
+    if (!ticking) {
+      requestAnimationFrame(updateScrollTrigger);
+      ticking = true;
     }
   }, { passive: true });
+  
+  // Gestione memoria per mobile
+  window.addEventListener('beforeunload', function() {
+    ScrollTrigger.killAll();
+    gsap.killTweensOf("*");
+  });
 }
