@@ -209,8 +209,9 @@ li:hover {
 
     .home {
         width: 60vw;
-        height: 70vh;
+        height: 60vh;
         position: relative;
+        margin-top:25px;
 
     }
 
