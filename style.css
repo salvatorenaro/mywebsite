@@ -143,6 +143,14 @@ li:hover {
         right: 25px;
 
     }
+    nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1em 2em;
+    position: relative;
+     
+    }
     .cv a{
         text-decoration: none;
         color: black;
